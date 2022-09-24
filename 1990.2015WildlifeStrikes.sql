@@ -21,7 +21,7 @@ where [Incident Month] BETWEEN 1 AND 12
 Group by [Incident Month]
 Order by [Incident Month] asc
 
--- Wildlife Strikes by Airline Provider, top 5 (1990-2015)
+-- Wildlife Strikes by Airline Provider, top 8 (1990-2015)
 
 select  top 8 Operator, count(*) as TotalIncidents from IndiaRainfall..WildlifeStrikes 
 where [Incident Year] BETWEEN 1990 AND 2015
@@ -37,7 +37,7 @@ AND NOT Airport = 'UNKNOWN'
 Group by Airport
 Order by TotalIncidents desc 
 
--- Wildlife Strikes by Aircraft
+-- Wildlife Strikes by Aircraft, top 8 (1990-2015)
 
 select top 8 Aircraft, count(*) as TotalIncidents from IndiaRainfall..WildlifeStrikes 
 where [Incident Year] BETWEEN 1990 AND 2015 
