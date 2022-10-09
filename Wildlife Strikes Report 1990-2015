@@ -1,3 +1,9 @@
+-- In this project, I wanted to work with data especially in the aviation industry. Being a resident of New York when the plane landed in the Hudson, I became interested 
+into seeing how likely this scenarios occur. I used different queries to show the best data possible. I hope you enjoy my results. 
+
+
+
+
 select * from IndiaRainfall..WildlifeStrikes
 
 -- Total Wildlife Strikes from 1990-2015
