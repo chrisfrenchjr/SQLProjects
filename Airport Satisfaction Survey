@@ -1,0 +1,102 @@
+-- Pull all columns from airline_survey
+
+select * from airline_survey
+
+-- Count total participants
+
+select count(*) as no_of_particpants from airline_survey
+
+-- Survey participants placed into groups by gender
+
+select gender, count(*) as no_of_passengers from airline_survey
+group by gender
+
+-- Survey participants placed into groups by satisfaction
+
+select satisfaction, count(*) as selected from airline_survey
+group by satisfaction
+
+-- Survey participants placed into groups by Customer Type
+
+select count(satisfaction) as no_of_passengers, customer_type from airline_survey
+group by customer_type 
+order by no_of_passengers desc
+
+-- Average age based on Customer Type, rounded to nearest age
+
+select customer_type, round(avg(age),0) as average_age from airline_survey
+group by customer_type
+order by average_age desc
+
+-- Average age based on class, rounded to nearest age
+
+select class, round(avg(age),0) as average_age from airline_survey
+group by class
+order by average_age desc
+
+-- Average age based on gender, rounded to nearest age
+
+select gender, round(avg(age),0) as average_age from airline_survey
+group by gender
+order by average_age desc
+
+-- Survey participants placed into groups by Class
+
+select class, count(satisfaction) as no_of_passengers from airline_survey
+group by class
+order by no_of_passengers desc
+
+-- Satisfied participants by class
+
+select class, count(satisfaction) as satisfied_passengers from airline_survey
+where satisfaction = 'Satisfied'
+group by class
+order by satisfied_passengers desc
+
+-- Unsatisfied participants by class
+
+select class, count(satisfaction) as non_satisfied_passengers from airline_survey
+where satisfaction = 'Neutral or Dissatisfied'
+group by class
+order by non_satisfied_passengers desc
+
+-- Comparing department scores among class
+
+select class, 
+count(*) as no_of_passengers,
+round(avg(flight_distance),0) as average_distance, 
+round(avg(age),0) as average_age,
+round(avg(seat_comfort),1) as seat_score,
+round(avg(legroom),1) as legroom_score,
+round(avg(service),1) as service_score
+from airline_survey
+group by class
+order by no_of_passengers desc
+
+-- Satisfied participants 
+
+select class, 
+count(*) as no_of_passengers,
+round(avg(flight_distance),0) as average_distance, 
+round(avg(age),0) as average_age,
+round(avg(seat_comfort),1) as seat_score,
+round(avg(legroom),1) as legroom_score,
+round(avg(service),1) as service_score
+from airline_survey
+where satisfaction = 'Satisfied'
+group by class
+order by no_of_passengers desc
+
+-- Unsatisfied participants
+
+select class, 
+count(*) as no_of_passengers,
+round(avg(flight_distance),0) as average_distance, 
+round(avg(age),0) as average_age,
+round(avg(seat_comfort),1) as seat_score,
+round(avg(legroom),1) as legroom_score,
+round(avg(service),1) as service_score
+from airline_survey
+where satisfaction = 'Neutral or Dissatisfied'
+group by class
+order by no_of_passengers desc
