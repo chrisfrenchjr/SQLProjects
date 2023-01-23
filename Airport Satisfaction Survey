@@ -25,9 +25,10 @@ SELECT
 from air..airline_report
 
 -- Percent of satisfaction by Customer Type
-SELECT [Customer Type],
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+SELECT 
+	[Customer Type],
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
 FROM air..airline_report
 GROUP BY [Customer Type]
 
@@ -39,42 +40,45 @@ from air..airline_report
 
 -- Percent of satisfaction using Type of Travel, Customer Type, Age, and Class in satisfaction descending order.
 
-SELECT [Type of Travel],
-		[Customer Type],
-		Class,
-		ROUND((AVG(age)),0) as [Average Age],
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+SELECT 
+	[Type of Travel],
+	[Customer Type],
+	Class,
+	ROUND((AVG(age)),0) as [Average Age],
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
 FROM air..airline_report
 GROUP BY [Type of Travel], [Customer Type], Class
 ORDER BY Satisfied desc
 
 -- Finding customer's preferences and finding correlations to passenger groups.
 
-SELECT [Type of Travel],
-		[Customer Type],
-		Class,
-		COUNT(CASE WHEN satisfaction = 'Satisfied' THEN 'yes' 
-		ELSE 'no' END) as [Number of Passengers],
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied],
-		ROUND((AVG(age)),0) as [Average Age],
-		ROUND((AVG([Flight Distance])),0) as [Average Flight Distance],
-		ROUND((AVG([Ease of Online Booking])),1) as [Average Online Booking Score],
-		ROUND((AVG([Check-in Service])),1) as [Average Check-In Service Score],
-		ROUND((AVG([Seat Comfort])),1) as [Average Seat Comfort Score],
-		ROUND((AVG([Leg Room Service])),1) as [Average Legroom Score],
-		ROUND((AVG([Food and Drink])),1) as [Average Food and Beverage Score],
-		ROUND((AVG([In-flight Service])),1) as [Average In-Flight Service Score]
+SELECT 
+	[Type of Travel],
+	[Customer Type],
+	Class,
+	COUNT(CASE WHEN satisfaction = 'Satisfied' THEN 'yes' 
+	ELSE 'no' END) as [Number of Passengers],
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied],
+	ROUND((AVG(age)),0) as [Average Age],
+	ROUND((AVG([Flight Distance])),0) as [Average Flight Distance],
+	ROUND((AVG([Ease of Online Booking])),1) as [Average Online Booking Score],
+	ROUND((AVG([Check-in Service])),1) as [Average Check-In Service Score],
+	ROUND((AVG([Seat Comfort])),1) as [Average Seat Comfort Score],
+	ROUND((AVG([Leg Room Service])),1) as [Average Legroom Score],
+	ROUND((AVG([Food and Drink])),1) as [Average Food and Beverage Score],
+	ROUND((AVG([In-flight Service])),1) as [Average In-Flight Service Score]
 FROM air..airline_report
 GROUP BY [Type of Travel], [Customer Type], Class
 ORDER BY [Number of Passengers] desc
 
 -- Satisfaction by Class
 
-SELECT Class,
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
-		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+SELECT 
+	Class,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
 FROM air..airline_report
 GROUP BY Class
 ORDER BY Satisfied desc
