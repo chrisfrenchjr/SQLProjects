@@ -1,102 +1,125 @@
--- Pull all columns from airline_survey
+SELECT * FROM air..airline_report
 
-select * from airline_survey
+-- Total Passangers
 
--- Count total participants
+SELECT 
+	COUNT(*) as [Total Passangers] 
+FROM air..airline_report;
 
-select count(*) as no_of_particpants from airline_survey
+-- Finding what levels of satisfaction are in the data
 
--- Survey participants placed into groups by gender
+SELECT DISTINCT(Satisfaction) 
+FROM air..airline_report;
 
-select gender, count(*) as no_of_passengers from airline_survey
-group by gender
+-- Percent of satisfaction, rounded to nearest hundredth
 
--- Survey participants placed into groups by satisfaction
+SELECT 
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+	ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+FROM air..airline_report
 
-select satisfaction, count(*) as selected from airline_survey
-group by satisfaction
+-- Customer types
 
--- Survey participants placed into groups by Customer Type
+SELECT 
+	DISTINCT([Customer Type])
+from air..airline_report
 
-select count(satisfaction) as no_of_passengers, customer_type from airline_survey
-group by customer_type 
-order by no_of_passengers desc
+-- Percent of satisfaction by Customer Type
+SELECT [Customer Type],
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+FROM air..airline_report
+GROUP BY [Customer Type]
 
--- Average age based on Customer Type, rounded to nearest age
+-- Type of Travel
 
-select customer_type, round(avg(age),0) as average_age from airline_survey
-group by customer_type
-order by average_age desc
+SELECT DISTINCT[Type of Travel] 
+from air..airline_report
 
--- Average age based on class, rounded to nearest age
 
-select class, round(avg(age),0) as average_age from airline_survey
-group by class
-order by average_age desc
+-- Percent of satisfaction using Type of Travel, Customer Type, Age, and Class in satisfaction descending order.
 
--- Average age based on gender, rounded to nearest age
+SELECT [Type of Travel],
+		[Customer Type],
+		Class,
+		ROUND((AVG(age)),0) as [Average Age],
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+FROM air..airline_report
+GROUP BY [Type of Travel], [Customer Type], Class
+ORDER BY Satisfied desc
 
-select gender, round(avg(age),0) as average_age from airline_survey
-group by gender
-order by average_age desc
+-- Finding customer's preferences and finding correlations to passenger groups.
 
--- Survey participants placed into groups by Class
+SELECT [Type of Travel],
+		[Customer Type],
+		Class,
+		COUNT(CASE WHEN satisfaction = 'Satisfied' THEN 'yes' 
+		ELSE 'no' END) as [Number of Passengers],
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied],
+		ROUND((AVG(age)),0) as [Average Age],
+		ROUND((AVG([Flight Distance])),0) as [Average Flight Distance],
+		ROUND((AVG([Ease of Online Booking])),1) as [Average Online Booking Score],
+		ROUND((AVG([Check-in Service])),1) as [Average Check-In Service Score],
+		ROUND((AVG([Seat Comfort])),1) as [Average Seat Comfort Score],
+		ROUND((AVG([Leg Room Service])),1) as [Average Legroom Score],
+		ROUND((AVG([Food and Drink])),1) as [Average Food and Beverage Score],
+		ROUND((AVG([In-flight Service])),1) as [Average In-Flight Service Score]
+FROM air..airline_report
+GROUP BY [Type of Travel], [Customer Type], Class
+ORDER BY [Number of Passengers] desc
 
-select class, count(satisfaction) as no_of_passengers from airline_survey
-group by class
-order by no_of_passengers desc
+-- Satisfaction by Class
 
--- Satisfied participants by class
+SELECT Class,
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Satisfied' THEN 1 END) * 100.0/COUNT(*)),2) as Satisfied,
+		ROUND((COUNT(CASE WHEN Satisfaction = 'Neutral or Dissatisfied' THEN 1 END) * 100.0/COUNT(*)),2) as [Neutral or Dissatisfied]
+FROM air..airline_report
+GROUP BY Class
+ORDER BY Satisfied desc
 
-select class, count(satisfaction) as satisfied_passengers from airline_survey
-where satisfaction = 'Satisfied'
-group by class
-order by satisfied_passengers desc
+-- Average Delay departing and arriving (in minutes)
 
--- Unsatisfied participants by class
+SELECT
+	ROUND(AVG([Departure Delay]),1) as [Average Departure Delay],
+	ROUND(AVG([Arrival Delay]),1) as [Average Arrival Delay]
+FROM air..airline_report
 
-select class, count(satisfaction) as non_satisfied_passengers from airline_survey
-where satisfaction = 'Neutral or Dissatisfied'
-group by class
-order by non_satisfied_passengers desc
+-- Percent of returning and first-time passengers
 
--- Comparing department scores among class
+SELECT
+	COUNT(CASE WHEN [Customer Type] = 'Returning' THEN 'yes' 
+	ELSE 'no' END) as Total,
+	ROUND((COUNT(CASE WHEN [Customer Type] = 'Returning' THEN 1 END) * 100.0/COUNT(*)),2) as [Percent Returning],
+	ROUND((COUNT(CASE WHEN [Customer Type] = 'First-time' THEN 1 END) * 100.0/COUNT(*)),2) as [Percent First-time]
+FROM air..airline_report
 
-select class, 
-count(*) as no_of_passengers,
-round(avg(flight_distance),0) as average_distance, 
-round(avg(age),0) as average_age,
-round(avg(seat_comfort),1) as seat_score,
-round(avg(legroom),1) as legroom_score,
-round(avg(service),1) as service_score
-from airline_survey
-group by class
-order by no_of_passengers desc
+-- Number of passengers based on Customer Type
+SELECT
+	[Customer Type],
+	COUNT(CASE WHEN [Customer Type] = 'Returning' THEN 'yes' 
+	ELSE 'no' END) as Total
+FROM air..airline_report
+GROUP BY [Customer Type]
 
--- Satisfied participants 
 
-select class, 
-count(*) as no_of_passengers,
-round(avg(flight_distance),0) as average_distance, 
-round(avg(age),0) as average_age,
-round(avg(seat_comfort),1) as seat_score,
-round(avg(legroom),1) as legroom_score,
-round(avg(service),1) as service_score
-from airline_survey
-where satisfaction = 'Satisfied'
-group by class
-order by no_of_passengers desc
-
--- Unsatisfied participants
-
-select class, 
-count(*) as no_of_passengers,
-round(avg(flight_distance),0) as average_distance, 
-round(avg(age),0) as average_age,
-round(avg(seat_comfort),1) as seat_score,
-round(avg(legroom),1) as legroom_score,
-round(avg(service),1) as service_score
-from airline_survey
-where satisfaction = 'Neutral or Dissatisfied'
-group by class
-order by no_of_passengers desc
+-- Average scores for each category	      
+SELECT 
+	ROUND(AVG([Departure Delay]),1) as [Average Departure Delay],
+	ROUND(AVG([Arrival Delay]),1) as [Average Arrival Delay],
+	ROUND(AVG([Departure and Arrival Time Convenience]),1) as [Average Departure and Arrival Time Convenience Score],
+	ROUND(AVG([Ease of Online Booking]),1) as [Average Ease of Online Booking Score],
+	ROUND(AVG([Check-in Service]),1) as [Average Check-in Service Score],
+	ROUND(AVG([Online Boarding]),1) as [Average Online Boarding Score],
+	ROUND(AVG([Gate Location]),1) as [Average Gate Location Score],
+	ROUND(AVG([On-board Service]),1) as [Average Onboarding Service Score],
+	ROUND(AVG([Seat Comfort]),1) as [Average Seat Comfort Score],
+	ROUND(AVG([Leg Room Service]),1) as [Average Leg Room Score],
+	ROUND(AVG([Cleanliness]),1) as [Average Cleanliness Score],
+	ROUND(AVG([Food and Drink]),1) as [Average Food and Drink Score],
+	ROUND(AVG([In-flight Service]),1) as [Average In-flight Service Score],
+	ROUND(AVG([In-flight Wifi Service]),1) as [Average In-flight WiFi Service Score],
+	ROUND(AVG([In-flight Entertainment]),1) as [Average In-flight Entertainment Score],
+	ROUND(AVG([Baggage Handling]),1) as [Average Baggage Handling Score]
+FROM air..airline_report
