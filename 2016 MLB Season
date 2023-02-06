@@ -1,0 +1,102 @@
+SELECT *
+FROM baseball..mlb;
+
+-- Average Attendance in 2016
+
+SELECT
+	ROUND(avg(attendance),0) as AverageAttendance
+FROM baseball..mlb
+WHERE season = 'regular season'
+
+-- Average Attendance by Team 
+
+WITH attendance as (
+SELECT
+	home_team
+	,ROUND(avg(attendance),0) as AverageAttendance
+FROM baseball..mlb
+WHERE season = 'regular season'
+GROUP BY home_team
+ORDER BY AverageAttendance DESC
+)
+
+SELECT *
+FROM attendance
+
+-- Using CTEs and JOINs to find each teams record
+
+WITH home_wins AS(
+SELECT 
+	home_team
+	,COUNT(home_team_outcome) as wins
+FROM baseball..mlb
+WHERE home_team_outcome = 'Win'
+AND season = 'regular season'
+GROUP BY home_team
+),
+
+home_losses AS(
+SELECT 
+	home_team
+	,COUNT(home_team_outcome) as losses
+FROM baseball..mlb
+WHERE home_team_outcome = 'Loss'
+AND season = 'regular season'
+GROUP BY home_team
+),
+
+away_wins AS(
+SELECT 
+	away_team
+	,COUNT(home_team_outcome) as wins
+FROM baseball..mlb
+WHERE home_team_outcome = 'Loss'
+AND season = 'regular season'
+GROUP BY away_team
+),
+
+away_losses AS(
+SELECT 
+	away_team
+	,COUNT(home_team_outcome) as losses
+FROM baseball..mlb
+WHERE home_team_outcome = 'Win'
+AND season = 'regular season'
+GROUP BY away_team
+)
+
+SELECT hw.home_team as Team,(hw.wins + aw.wins) as Wins,(al.losses + hl.losses) as Losses
+FROM home_wins as hw
+JOIN home_losses as hl
+ON hw.home_team = hl.home_team
+JOIN away_wins as aw
+ON hw.home_team = aw.away_team
+JOIN away_losses as al
+ON hw.home_team = al.away_team
+ORDER BY Wins DESC
+
+
+-- Average attendance, total games, runs, hits and errors in regular season
+
+SELECT
+	ROUND(avg(attendance),0) as AverageAttendance
+	,COUNT(Game#) as TotalGames
+	,SUM(away_team_runs + home_team_runs) as TotalRuns
+	,SUM(away_team_hits + home_team_hits) as TotalHits
+	,SUM(away_team_errors + home_team_errors) as TotalErrors
+FROM baseball..mlb
+WHERE season = 'regular season'
+ORDER BY TotalRuns
+
+-- Gameday information for home teams
+
+SELECT
+	[date]
+	,home_team
+	,day_of_week
+	,attendance
+	,temperature
+	,wind_speed
+FROM baseball..mlb
+WHERE season = 'regular season'
+ORDER BY [date]
